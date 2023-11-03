@@ -1,46 +1,43 @@
-var Meta = imports.gi.Meta;
-var ExtensionUtils = imports.misc.extensionUtils;
+import Meta from 'gi://Meta';
+import {Extension, gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
-var _windowCreatedId;
-var _settings;
+export default class MaxiExtension extends Extension {
+    enable() {
+	this._settings = this.getSettings();
+        this._windowCreatedId = global.display.connect('window-created', (d, win) => {
+            win._maxievtId = win.connect('focus', (win) => {
 
-function init() {
-    _settings = ExtensionUtils.getSettings();
-}
+                const DEBUG = this._settings.get_boolean('debug');
 
-function enable() {
-    _windowCreatedId = global.display.connect('window-created', (d, win) => {
-        win._maxievtId = win.connect('focus', (win) => {
-
-            const DEBUG = _settings.get_boolean('debug');
-
-            if (DEBUG) {
-                global.log(" \
-                gnome-extension maxi@darkretailer.github.com: gtk_application_id: "
-                    + win.gtk_application_id
-                );
-            }
-
-            if (!this._settings.get_strv('blacklisted-apps').includes(win.gtk_application_id + ".desktop")) {
-                if (win.can_maximize()) {
-                    if (_settings.get_boolean('vertical')) {
-                        win.maximize(Meta.MaximizeFlags.VERTICAL);
-                    }
-                    if (_settings.get_boolean('horizontal')) {
-                        win.maximize(Meta.MaximizeFlags.HORIZONTAL);
-                    }
-                }
-            } else {
                 if (DEBUG) {
-                    global.log('gnome-extension maxi@darkretailer.github.com: "' + win.gtk_application_id + '" is blacklisted');
+                    global.log(" \
+                    gnome-extension maxi@snickl.github.com: gtk_application_id: "
+                        + win.gtk_application_id
+                    );
                 }
-            }
-            win.disconnect(win._maxievtId);
-        });
-    });
-}
 
-function disable() {
-    global.display.disconnect(_windowCreatedId);
-    _windowCreatedId = null;
+                if (!this._settings.get_strv('blacklisted-apps').includes(win.gtk_application_id + ".desktop")) {
+                    if (win.can_maximize()) {
+                        if (this._settings.get_boolean('vertical')) {
+                            win.maximize(Meta.MaximizeFlags.VERTICAL);
+                        }
+                        if (this._settings.get_boolean('horizontal')) {
+                            win.maximize(Meta.MaximizeFlags.HORIZONTAL);
+                        }
+                    }
+                } else {
+                    if (DEBUG) {
+                        global.log('gnome-extension maxi@snickl.github.com: "' + win.gtk_application_id + '" is blacklisted');
+                    }
+                }
+                win.disconnect(win._maxievtId);
+            });
+        });
+    }
+
+    disable() {
+        global.display.disconnect(this._windowCreatedId);
+        this._windowCreatedId = null;
+	this._settings = null;
+    }
 }

@@ -1,8 +1,12 @@
-// -*- mode: js2; indent-tabs-mode: nil; js2-basic-offset: 4 -*-
-/* exported init buildPrefsWidget */
+import Gio from 'gi://Gio';
+import GObject from 'gi://GObject';
+import Gtk from 'gi://Gtk';
 
-const { Gio, GObject, Gtk } = imports.gi;
+import {ExtensionPreferences, gettext as _} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
+export default class MyExtensionPreferences extends ExtensionPreferences {
+
+/*
 const Gettext = imports.gettext.domain('gnome-shell-extensions');
 const _ = Gettext.gettext;
 
@@ -18,7 +22,7 @@ const Columns = {
 function init() {
     //ExtensionUtils.initTranslations();
 }
-
+*/
 const MaxiSettings = GObject.registerClass(
     class MaxiSettings extends Gtk.Grid {
         _init(params) {
@@ -184,4 +188,6 @@ const MaxiSettings = GObject.registerClass(
 function buildPrefsWidget() {
     let maxisettings = new MaxiSettings();
     return maxisettings;
+}
+
 }
